@@ -72,7 +72,7 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "name": "lightship",
+  "name": "@modusbox/lightship",
   "nyc": {
     "include": [
       "src/**/*.ts"
@@ -82,9 +82,12 @@
       "source-map-support/register"
     ]
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gajus/lightship"
+    "url": "git+https://github.com/modusbox/lightship.git"
   },
   "scripts": {
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --source-maps --extensions \".ts\" && tsc --emitDeclarationOnly",
