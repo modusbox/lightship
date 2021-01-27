@@ -65,5 +65,18 @@ export type Lightship = {
   readonly shutdown: () => Promise<void>;
   readonly signalNotReady: () => void;
   readonly signalReady: () => void;
-  readonly whenFirstReady: () => Promise<void>
+  readonly startStep: (message: string) => void;
+  readonly whenFirstReady: () => Promise<void>;
+  readonly healthInfoProvider: (callback: () => Promise<unknown>) => void;
 };
+
+export type StartupLogEntry = {
+  lastTimestamp: string,
+  message: string,
+  count: number
+};
+
+export type StartupLog = {
+  log: Array<StartupLogEntry>
+};
+

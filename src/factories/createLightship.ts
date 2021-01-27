@@ -28,6 +28,7 @@ import type {
   Lightship,
   ShutdownHandler,
   BeaconController,
+  StartupLog,
 } from '../types';
 import {
   isKubernetes,
@@ -112,14 +113,29 @@ export default (userConfiguration?: ConfigurationInput): Lightship => {
     server,
   });
 
-  app.get('/health', (_request, response) => {
+
+  const startupLog : StartupLog = {
+    log: [],
+  };
+
+  app.get('/health', async (_request, response) => {
+    const responsePayload = {
+      detail: healthInfoCallback === null ? {} : await healthInfoCallback(),
+      log: startupLog,
+      state: '',
+      statusCode: 0,
+    };
     if (serverIsShuttingDown) {
-      response.status(500).send(SERVER_IS_SHUTTING_DOWN);
+      responsePayload.state = SERVER_IS_SHUTTING_DOWN;
+      responsePayload.statusCode = 500;
     } else if (serverIsReady) {
-      response.send(SERVER_IS_READY);
+      responsePayload.state = SERVER_IS_READY;
+      responsePayload.statusCode = 200;
     } else {
-      response.status(500).send(SERVER_IS_NOT_READY);
+      responsePayload.state = SERVER_IS_NOT_READY;
+      responsePayload.statusCode = 500;
     }
+    response.status(responsePayload.statusCode).json(responsePayload);
   });
 
   app.get('/live', (_request, response) => {
@@ -165,6 +181,20 @@ export default (userConfiguration?: ConfigurationInput): Lightship => {
 
     if (blockingTasks.length === 0) {
       resolveFirstReady();
+    }
+  };
+
+  const startStep = (message: string): void => {
+    const lastItem = startupLog.log[startupLog.log.length - 1];
+    if (lastItem && lastItem.message === message) {
+      lastItem.count++;
+      lastItem.lastTimestamp = new Date().toISOString();
+    } else {
+      startupLog.log.push({
+        count: 1,
+        lastTimestamp: new Date().toISOString(),
+        message,
+      });
     }
   };
 
@@ -305,8 +335,15 @@ export default (userConfiguration?: ConfigurationInput): Lightship => {
     };
   };
 
+  let healthInfoCallback: () => Promise<unknown>;
+
+  const healthInfoProvider = (callback: () => Promise<unknown>) : void => {
+    healthInfoCallback = callback;
+  };
+
   return {
     createBeacon,
+    healthInfoProvider,
     isServerReady,
     isServerShuttingDown: () => {
       return serverIsShuttingDown;
@@ -336,6 +373,7 @@ export default (userConfiguration?: ConfigurationInput): Lightship => {
     },
     signalNotReady,
     signalReady,
+    startStep,
     whenFirstReady: () => {
       return deferredFirstReady;
     },
