@@ -1,7 +1,7 @@
 <a name="lightship"></a>
 # Lightship 🚢
 
-Forked from /gajus/lightship  to add more detailed info on the `/health` endpoint. For setup on a k8s cluster see [https://github.com/modusbox/lightship#lightship-]
+Forked from /gajus/lightship  to add more detailed info on the `/health` endpoint. For setup on a k8s cluster see [https://github.com/gajus/lightship#lightship-]
 
 ## Using it
 

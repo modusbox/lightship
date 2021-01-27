@@ -113,7 +113,6 @@ export default (userConfiguration?: ConfigurationInput): Lightship => {
     server,
   });
 
-
   const startupLog : StartupLog = {
     log: [],
   };
