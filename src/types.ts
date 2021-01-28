@@ -80,3 +80,9 @@ export type StartupLog = {
   log: Array<StartupLogEntry>
 };
 
+export type HealthResponse = {
+  detail: unknown,
+  log: StartupLog,
+  state: string,
+  statusCode: number,
+};

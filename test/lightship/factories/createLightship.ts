@@ -1,3 +1,4 @@
+/* eslint-disable ava/max-asserts */
 import {
   AddressInfo,
 } from 'net';
@@ -12,8 +13,14 @@ import {
   SERVER_IS_NOT_READY, SERVER_IS_NOT_SHUTTING_DOWN, SERVER_IS_READY, SERVER_IS_SHUTTING_DOWN,
 } from '../../../src/states';
 import {
+  HealthResponse,
   Lightship,
 } from '../../../src/types';
+
+type HealthProbeState = {
+  readonly message: HealthResponse;
+  readonly status: number;
+};
 
 type ProbeState = {
   readonly message: string;
@@ -21,7 +28,7 @@ type ProbeState = {
 };
 
 type ServiceState = {
-  readonly health: ProbeState;
+  readonly health: HealthProbeState;
   readonly live: ProbeState;
   readonly ready: ProbeState;
 };
@@ -83,7 +90,7 @@ test('server starts in SERVER_IS_NOT_READY state', async (t) => {
   const serviceState = await getServiceState(lightship);
 
   t.is(serviceState.health.status, 500);
-  t.is(serviceState.health.message, SERVER_IS_NOT_READY);
+  t.is(serviceState.health.message.state, SERVER_IS_NOT_READY);
 
   t.is(serviceState.live.status, 200);
   t.is(serviceState.live.message, SERVER_IS_NOT_SHUTTING_DOWN);
@@ -112,7 +119,7 @@ test('calling `signalReady` changes server state to SERVER_IS_READY', async (t) 
   const serviceState = await getServiceState(lightship);
 
   t.is(serviceState.health.status, 200);
-  t.is(serviceState.health.message, SERVER_IS_READY);
+  t.is(serviceState.health.message.state, SERVER_IS_READY);
 
   t.is(serviceState.live.status, 200);
   t.is(serviceState.live.message, SERVER_IS_NOT_SHUTTING_DOWN);
@@ -214,7 +221,7 @@ test('calling `signalNotReady` changes server state to SERVER_IS_NOT_READY', asy
   const serviceState = await getServiceState(lightship);
 
   t.is(serviceState.health.status, 500);
-  t.is(serviceState.health.message, SERVER_IS_NOT_READY);
+  t.is(serviceState.health.message.state, SERVER_IS_NOT_READY);
 
   t.is(serviceState.live.status, 200);
   t.is(serviceState.live.message, SERVER_IS_NOT_SHUTTING_DOWN);
@@ -251,7 +258,7 @@ test('calling `shutdown` changes server state to SERVER_IS_SHUTTING_DOWN', async
   const serviceState = await getServiceState(lightship);
 
   t.is(serviceState.health.status, 500);
-  t.is(serviceState.health.message, SERVER_IS_SHUTTING_DOWN);
+  t.is(serviceState.health.message.state, SERVER_IS_SHUTTING_DOWN);
 
   t.is(serviceState.live.status, 500);
   t.is(serviceState.live.message, SERVER_IS_SHUTTING_DOWN);

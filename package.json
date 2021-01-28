@@ -96,5 +96,5 @@
     "test": "NODE_ENV=test ava --verbose --serial",
     "typecheck": "tsc --noEmit"
   },
-  "version": "1.0.4-modus"
+  "version": "1.0.5-modus"
 }

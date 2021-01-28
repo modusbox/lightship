@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable no-eq-null */
 // eslint-disable-next-line fp/no-events
 import {
   EventEmitter,
@@ -25,6 +27,7 @@ import type {
   BlockingTask,
   ConfigurationInput,
   Configuration,
+  HealthResponse,
   Lightship,
   ShutdownHandler,
   BeaconController,
@@ -118,8 +121,8 @@ export default (userConfiguration?: ConfigurationInput): Lightship => {
   };
 
   app.get('/health', async (_request, response) => {
-    const responsePayload = {
-      detail: healthInfoCallback === null ? {} : await healthInfoCallback(),
+    const responsePayload : HealthResponse = {
+      detail: healthInfoCallback == null ? {} : await healthInfoCallback(),
       log: startupLog,
       state: '',
       statusCode: 0,
